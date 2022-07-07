@@ -74,7 +74,7 @@ def scraping(worker, data):
     try:
         WebDriverWait(worker, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#dijit_layout_ContentPane_0 > div')))
     except:
-        row = [vs_name, vs_id, "TimeoutException", "TimeoutException"]
+        row = [data, vs_name, vs_id, "TimeoutException", "TimeoutException"]
         file = open('draft_table.csv', 'a')
         writer = csv.writer(file)
         writer.writerow(row)
@@ -89,7 +89,7 @@ def scraping(worker, data):
     try:
         query_list = query_table[0].find_all(name='td', style = 'text-align: left;')
     except:
-        row = [vs_name, vs_id, "ResultsEmpty", "ResultsEmpty"]
+        row = [data, vs_name, vs_id, "ResultsEmpty", "ResultsEmpty"]
         file = open('draft_table.csv', 'a')
         writer = csv.writer(file)
         writer.writerow(row)
@@ -99,7 +99,7 @@ def scraping(worker, data):
     exact = []
     for query in query_list:
         if query.string.lower() == vs_name.lower():
-            row = [vs_name, vs_id, query.string.title().strip(), query['tokenvalue']]
+            row = [data, vs_name, vs_id, query.string.title().strip(), query['tokenvalue']]
             exact.append(row)
     
     file = open('draft_table.csv', 'a')
@@ -109,6 +109,6 @@ def scraping(worker, data):
             writer.writerow(row)
     else:
         for x in range(0,min(10,len(query_list))):
-            row = [vs_name, vs_id, query_list[x].string.title().strip(), query_list[x]['tokenvalue']]
+            row = [data, vs_name, vs_id, query_list[x].string.title().strip(), query_list[x]['tokenvalue']]
             writer.writerow(row)
     file.close()
