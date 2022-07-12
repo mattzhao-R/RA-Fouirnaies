@@ -11,52 +11,11 @@ import csv
 import random
 import time
 
-######################################################### INITIAL METHODS ###################################################
-# these methods are drawn from the work done in the vs_ltm_linktable notebook and are not methods that end up being used
+########################################################## SUB METHODS ##########################################################
+# components of the final method(s)
 
-# takes in element from VoteSmart organization list and returns vs organization name,id and list of scraped organization matches 
-# list takes the form of FTMname_FTMd
-def scrape(in_string):
-    #parsing input
-    vs_id = in_string.split("/")[-2]
-    vs_name = in_string.split("/")[-1]
-    
-    #query creation
-    search_string = "+".join(vs_name.title().split("-"))
-    query = 'https://www.followthemoney.org/search-results/SearchForm?Search=' + search_string
-    
-    #scraping table
-    options = Options()
-    options.binary_location = './Mozilla Firefox/firefox.exe' #r'C:\Program Files\Mozilla Firefox\firefox.exe'
-    driver1 = webdriver.Firefox(executable_path='./geckodriver.exe', options=options)
-    driver1.get(url)
-    html = driver1.page_source
-    driver1.close()
-    
-    #extracting info from table
-    sample = BeautifulSoup(html, 'html.parser')
-    query_table = sample.find_all(name='div', class_ = 'table-responsive')
-    query_list = query_table[0].find_all(name='td', style = 'text-align: left;')
-    
-    names = []
-    ids = []
-    if len(query_list)==1:
-        names.append(query_list[0].string)
-        ids.append(row['tokenvalue'])
-    
-    return vs_name, vs_id, names, ids
-
-# given an org name from VoteSmart and a scraped list of possible matches, return the most likely organization's FTM name and id
-def match_org(vs_name, search_results):
-    
-    
-    return ftm_id, ftm_name
-
-
-#################################################### FINAL METHOD ###############################################
-# this final method is the one that gets used in the parallelized scraping at the end of the notebook
-# worker is a Chrome webdriver, data is an element of the list of votesmart organizations
-def scraping(worker, data):
+# takes in an input from SIG_state list of votesmart orgs and returns a query for scraping
+def make_query(vs_address):
     #parsing input
     vs_id = data.split("/")[-2]
     temp = data.split("/")[-1]
@@ -65,21 +24,34 @@ def scraping(worker, data):
     #query creation
     search_string = "+".join(vs_name.title().split("-"))
     query = 'https://www.followthemoney.org/search-results/SearchForm?Search=' + search_string
+    return query
+
+######################################################### FINAL METHOD #########################################################
+# scraping is used in conjuction with parallel to generate a link table (each iteration of scraping creates one row of the table)
+# worker is a Chrome webdriver, data is an element of the list of votesmart organizations
+def scraping(worker, data):
+    # query creation
+    query = make_query(data)
+
+    # random wait to avoid site checks
     wait = random.randrange(10)
     time.sleep(wait)
-    
     
     #scraping table
     worker.get(query)
     try:
         WebDriverWait(worker, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#dijit_layout_ContentPane_0 > div')))
     except:
-        row = [data, vs_name, vs_id, "TimeoutException", "TimeoutException"]
-        file = open('draft_table.csv', 'a')
-        writer = csv.writer(file)
-        writer.writerow(row)
-        file.close()
-        return
+        try:
+            time.sleep(60)
+            WebDriverWait(worker, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#dijit_layout_ContentPane_0 > div')))
+        except:
+            row = [data, vs_name, vs_id, "TimeoutException", "TimeoutException"]
+            file = open('draft_table.csv', 'a')
+            writer = csv.writer(file)
+            writer.writerow(row)
+            file.close()
+            return
     
     html = worker.page_source
     
@@ -108,7 +80,7 @@ def scraping(worker, data):
         for row in exact:
             writer.writerow(row)
     else:
-        for x in range(0,min(10,len(query_list))):
-            row = [data, vs_name, vs_id, query_list[x].string.title().strip(), query_list[x]['tokenvalue']]
+        for x in query_list:
+            row = [data, vs_name, vs_id, x.string.title().strip(), x['tokenvalue']]
             writer.writerow(row)
     file.close()
