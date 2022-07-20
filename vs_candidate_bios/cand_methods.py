@@ -32,7 +32,10 @@ def get_edu(edu_card):
     edus = edu_card.find_all(name = 'p')
     edu_list = []
     for edu in edus:
-        edu_list.append(edu.string.strip())
+        try:
+            edu_list.append(edu.string.strip())
+        except:
+            pass
     
     if((len(edu_list)==1) & ('information on file.' in edu_list[0])):
         edu_list = np.nan
@@ -41,18 +44,31 @@ def get_edu(edu_card):
 
 def get_others(cards):
     others = []
-    for card in cards:
-        if(card != cards[0]):
-            temp = card.find_all(name = 'p')
-            o = []
-            for t in temp:
-                o.append(t.string.strip())
-            if((len(o)==1) & (' on file.' in o[0])):
-                o = np.nan
+    if(len(cards)==6):
+        cards = cards[1:5]
+    else:
+        cards = cards[1:]
 
-            others.append(o)
+    for card in cards:
+        temp = card.find_all(name = 'p')
+        o = []
+        for t in temp:
+            o.append(t.string.strip())
+        if((len(o)==1) & (' on file.' in o[0])):
+            o = np.nan
+
+        others.append(o)
     
     return others
+
+def get_addl(cards):
+    try:
+        last = cards[5].find_all(name = 'p')
+        addl = [l for l in last]
+    except:
+        addl = np.nan
+    
+    return addl
 
 def writerow(row, path):
     file = open(path, 'a')
@@ -94,8 +110,8 @@ def scrape_candbio(num, fname = 'draft_cbios', write = True):
     
     cards = soup.find_all(name = 'div', class_ = 'card card-plain accordion-card') # all cards besides education
     edu_card = soup.find(name = 'div', class_ = 'card card-plain accordion-card accordion-header')
-    
-    row = [num, get_personal(cards), get_edu(edu_card)] + get_others(cards)
+            
+    row = [num, get_personal(cards), get_edu(edu_card)] + get_others(cards) + [get_addl(cards)]
     
     if(write):
         path = './' + fname + '.csv'
