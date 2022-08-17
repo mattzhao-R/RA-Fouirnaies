@@ -46,15 +46,16 @@ The final output (final_draft_table.csv) contains the VoteSmart organization nam
 
 ### Scraping Candidate Biographies
 
-
+The objective of this project was to scrape the biographical information of candidates from the VoteSmart website. This includes information such as their past positions, education, etc. An example can be found [here](https://justfacts.votesmart.org/candidate/biography/74/emil-rossi). This was accomplished by scraping the pages of these candidates using BeautifulSoup and putting each section into a csv file (draft_cbios.csv). 
 
 #### Input
 
-
+Since the candidate ids are just numbers running from 1 to approximately 210,000, we can simply create a query by feeding in a list of numbers into the method, meaning that candidate name is not required. As a result, the input is simply a list from 1 to 210,000.
 
 #### Methods Script
 
-
+The final method takes in a number and creates a query following the format for each candidate biography page. It then uses BeautifulSoup to parse the html file and extracts information from each section and places it in a list. Each of these lists is put into another list which constitutes the row that gets written to the csv. 
 
 #### Biography Output
 
+The final output is a csv with columns corresponding to Candidate Number, Personal, Education, Political Experience, Caucuses/Former Committees, Professional Experience, Religious, Civic, and other Memberships, and Additional Information. All the sections besides Candidate Number correspond to dropdown sections in the candidate biography website. 
