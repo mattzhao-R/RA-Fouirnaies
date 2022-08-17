@@ -7,7 +7,7 @@ This repo contains work which I completed as a Research Assistant for Professor 
 
 ## Workflow
 
-For each project, I began with a working Jupyter Notebook that fully illustrates the work I did to complete each task, including how I created helper functions and my general thought process as I worked on these tasks. The notebooks are by a short-hand version of the name of their respective projects. The methods developed in these notebooks end up in Python scripts and are used by the final notebooks which contain a short chunk of code that, when run, produces the output of each project. 
+For each project, I began with a working Jupyter Notebook that fully illustrates the work I did to complete each task, including how I created helper functions and my general thought process as I worked on these tasks. The notebooks are vs_ltm_linktable.ipynb and cand_bios.ipynb. The methods developed in these notebooks end up in Python scripts and are used by the final notebooks which contain a short chunk of code that, when run, produces the output of each project. 
 
 *Note: For the Linktable project, chromedriver is required and you must [download](https://chromedriver.chromium.org/downloads) the version online that matches your current version of Chrome*
 
@@ -26,13 +26,14 @@ The objective of this project was to create a table that would link organization
 
 #### Data
 
-I was given a file containing the website links for the VoteSmart organizations we wanted to match to FollowTheMoney. Each link contained the VoteSmart organization name and id. 
+I was given a file (SIG_state.csv) containing the website links for the VoteSmart organizations we wanted to match to FollowTheMoney. Each link contained the VoteSmart organization name and id. Example: AK;https://justfacts.votesmart.org/interest-group/689/alaska-state-chamber-of-commerce. 
+
 
 #### Methods and Parallelization Scripts
 
 **Method**
 
-The final method for this project takes in a chromedriver worker object and VoteSmart organization website link and outputted the VoteSmart name, id, and the corresponding FollowTheMoney name(s) and id(s) scraped from the results table. It first takes in the url and parses it to create a query in FollowTheMoney. This query then goes to the worker which loads the results table (this table cannot be directly obtained using BeautifulSoup). The method then extracts the html and feeds it into BeautifulSoup where we extract the FollowTheMoney organization name(s) and id(s) and writes the row or rows into a csv. 
+The final method (vs_ltm_linktable.py) for this project takes in a chromedriver worker object and VoteSmart organization website link and outputted the VoteSmart name, id, and the corresponding FollowTheMoney name(s) and id(s) scraped from the results table. It first takes in the url and parses it to create a query in FollowTheMoney. This query then goes to the worker which loads the results table (this table cannot be directly obtained using BeautifulSoup). The method then extracts the html and feeds it into BeautifulSoup where we extract the FollowTheMoney organization name(s) and id(s) and writes the row or rows into a csv (draft_table.csv). 
 
 **Parallelization**
 
@@ -40,7 +41,7 @@ The parallelization script adapts a script from [wooddar's repo](https://gist.gi
 
 #### Linktable Output
 
-The final output contains the VoteSmart organization name and id and the corresponding FollowTheMoney name and id. If the query was unsuccessful, the entries for FollowTheMoney will be "TimeoutException". If the query was successful but the results table was empty, indicating that the organization is not in FollowTheMoney's database, the entries will be "ResultsEmpty". 
+The final output (final_draft_table.csv) contains the VoteSmart organization name and id and the corresponding FollowTheMoney name and id. For each VoteSmart organization, if the query was unsuccessful, the entries for FollowTheMoney will be "TimeoutException". If the query was successful but the results table was empty, indicating that the organization is not in FollowTheMoney's database, the entries will be "ResultsEmpty". 
 
 
 ### Scraping Candidate Biographies
