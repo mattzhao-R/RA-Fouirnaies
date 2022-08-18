@@ -58,4 +58,4 @@ The final method takes in a number and creates a query following the format for 
 
 #### Biography Output
 
-The final output is a csv with columns corresponding to Candidate Number, Personal, Education, Political Experience, Caucuses/Former Committees, Professional Experience, Religious, Civic, and other Memberships, and Additional Information. All the sections besides Candidate Number correspond to dropdown sections in the candidate biography website. 
+The final output is a csv with columns corresponding to Candidate Number, Personal, Education, Political Experience, Caucuses/Former Committees, Professional Experience, Religious, Civic, and other Memberships, and Additional Information. All the sections besides Candidate Number correspond to dropdown sections in the candidate biography website. Currently, the largest output file contains 10k candidates which took <3 hours. 
